@@ -39,9 +39,21 @@
     }
     .splash-foot a { color: var(--text-soft); }
     .splash-foot a:hover { color: var(--text); }
+    .splash-lang {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      z-index: 2;
+    }
   </style>
 </head>
 <body>
+  <div class="splash-lang">
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" data-lang="zh" class="on">中文</button>
+      <button type="button" data-lang="en">EN</button>
+    </div>
+  </div>
   <main class="splash">
     <div class="hero-blob b1"></div>
     <div class="hero-blob b2"></div>
@@ -49,17 +61,72 @@
     <div class="splash-inner">
       <div class="brand-mark">IC</div>
       <h1><span class="gradient-text">Ivor.C Studio</span></h1>
-      <p class="lead">用心打造的 iOS 小工具。这里汇集产品介绍、技术支持与隐私政策。</p>
+      <p class="lead" id="splash-lead">用心打造的 iOS 小工具。这里汇集产品介绍、技术支持与隐私政策。</p>
       <div class="splash-actions">
-        <a class="btn btn-primary" href="web-blog/">进入网站 →</a>
-        <a class="btn btn-ghost" href="web-blog/support.html">技术支持</a>
-        <a class="btn btn-ghost" href="web-blog/privacy/index.html">隐私政策</a>
+        <a class="btn btn-primary" href="web-blog/" id="splash-enter">进入网站 →</a>
+        <a class="btn btn-ghost" href="web-blog/support.html" id="splash-support">技术支持</a>
+        <a class="btn btn-ghost" href="web-blog/privacy/index.html" id="splash-privacy">隐私政策</a>
       </div>
     </div>
   </main>
   <footer class="splash-foot">
-    © <span id="y"></span> Ivor.C Studio · <a href="web-blog/">作品与技术支持</a>
+    © <span id="y"></span> Ivor.C Studio · <a href="web-blog/" id="splash-foot-link">作品与技术支持</a>
   </footer>
-  <script>document.getElementById("y").textContent = new Date().getFullYear();</script>
+  <script>
+    document.getElementById("y").textContent = new Date().getFullYear();
+    const copy = {
+      zh: {
+        lead: "用心打造的 iOS 小工具。这里汇集产品介绍、技术支持与隐私政策。",
+        enter: "进入网站 →",
+        support: "技术支持",
+        privacy: "隐私政策",
+        foot: "作品与技术支持",
+        desc: "Ivor.C Studio — 用心打造的 iOS 小工具。产品介绍、技术支持与隐私政策。",
+      },
+      en: {
+        lead: "Thoughtfully crafted iOS utilities — product info, support, and privacy policies.",
+        enter: "Enter site →",
+        support: "Support",
+        privacy: "Privacy",
+        foot: "Apps & support",
+        desc: "Ivor.C Studio — thoughtfully crafted iOS utilities. Product info, support, and privacy.",
+      },
+    };
+    function getLang() {
+      const fromUrl = new URLSearchParams(location.search).get("lang");
+      if (fromUrl === "en" || fromUrl === "zh") return fromUrl;
+      return localStorage.getItem("lang") === "en" ? "en" : "zh";
+    }
+    function apply(lang) {
+      const t = copy[lang];
+      document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
+      document.getElementById("splash-lead").textContent = t.lead;
+      document.getElementById("splash-enter").textContent = t.enter;
+      document.getElementById("splash-support").textContent = t.support;
+      document.getElementById("splash-privacy").textContent = t.privacy;
+      document.getElementById("splash-foot-link").textContent = t.foot;
+      document.querySelector('meta[name="description"]').setAttribute("content", t.desc);
+      document.querySelectorAll(".splash-lang [data-lang]").forEach((btn) => {
+        btn.classList.toggle("on", btn.getAttribute("data-lang") === lang);
+      });
+      document.getElementById("splash-enter").href = "web-blog/?lang=" + lang;
+      document.getElementById("splash-support").href = "web-blog/support.html?lang=" + lang;
+      document.getElementById("splash-privacy").href = "web-blog/privacy/index.html?lang=" + lang;
+      document.getElementById("splash-foot-link").href = "web-blog/?lang=" + lang;
+    }
+    const lang = getLang();
+    localStorage.setItem("lang", lang);
+    apply(lang);
+    document.querySelectorAll(".splash-lang [data-lang]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const next = btn.getAttribute("data-lang");
+        localStorage.setItem("lang", next);
+        const url = new URL(location.href);
+        url.searchParams.set("lang", next);
+        history.replaceState({ lang: next }, "", url);
+        apply(next);
+      });
+    });
+  </script>
 </body>
 </html>

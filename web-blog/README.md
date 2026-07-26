@@ -18,7 +18,7 @@
 │   ├── index.html          # 隐私政策总览
 │   ├── today-income.html   # 《今日收入》隐私政策
 │   ├── woodenfish.html     # 《电子木鱼》隐私政策
-│   └── crs-tax-calc.html   # 《境外证券收益个税计算器》隐私政策（即将上架）
+│   └── crs-tax-calc.html   # 《境外证券收益个税计算器》隐私政策
 ├── css/styles.css          # 设计系统 / 样式
 ├── js/privacy-data.js      # 隐私政策全部文案（zh / en，集中维护）
 ├── js/privacy.js           # 隐私政策渲染 + 语言切换
@@ -48,13 +48,14 @@ npx serve .
 
 1. **`SITE.brand` / `brandMark` / `copyrightName`** —— 品牌名（当前为 `Ivor.C Studio`），如需更换在此修改。
 2. **`PRODUCTS[].appStoreUrl`** —— App 上架后填入商店链接，卡片会自动出现 “App Store ↗”。
-3. **App 图标** —— 产品卡使用 `PRODUCTS[].img`（真实图标，放在 `assets/icons/`）。若某项没有 `img`，会回退到 `icon`（emoji）+ `gradient` 底色。`status: "soon"` 会显示「即将上架」角标。
-4. **新增博客文章** —— 复制 `blog/posts/welcome.html` 改写内容，并在 `blog/index.html` 增加一张卡片。
-5. **新增 App** —— 在 `PRODUCTS` 数组里加一项；隐私政策只需在 `js/privacy-data.js` 的 `PRIVACY.policies` 里补一条（zh / en），再复制一个 `privacy/<id>.html`（仅改 `data-app`）即可。
+3. **App 图标** —— 产品卡使用 `PRODUCTS[].img`（真实图标，放在 `assets/icons/`）。若某项没有 `img`，会回退到 `icon`（emoji）+ `gradient` 底色。`badge: "new"` 显示「新上线」角标；`status: "soon"` 显示「即将上架」。
+4. **语言** —— 右上角可切换中文 / English；文案在 `js/main.js` 的 `I18N` 与产品字段中维护，偏好保存在 `localStorage.lang`。
+5. **新增博客文章** —— 复制 `blog/posts/welcome.html` 改写内容，并在 `blog/index.html` 增加一张卡片。
+6. **新增 App** —— 在 `PRODUCTS` 数组里加一项；隐私政策只需在 `js/privacy-data.js` 的 `PRIVACY.policies` 里补一条（zh / en），再复制一个 `privacy/<id>.html`（仅改 `data-app`）即可。
 
 ### 隐私政策（多语言）
 
-- 所有政策文案集中在 **`js/privacy-data.js`**，每条都含 `zh` / `en` 两种语言，页面右上角可一键切换（选择会记忆在浏览器）。
+- 所有政策文案集中在 **`js/privacy-data.js`**，每条都含 `zh` / `en` 两种语言；与全站共用右上角语言切换（选择会记忆在浏览器）。
 - `今日收入`、`电子木鱼` 的内容还原自其官方政策模板；`境外证券收益个税计算器` 按其「端内处理 + Apple 内购」的实际情况编写。
 - 修改文案：直接编辑 `js/privacy-data.js`；无需改动 HTML。
 

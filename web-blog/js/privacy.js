@@ -1,35 +1,18 @@
 /* ============================================================
    隐私政策渲染 + 多语言切换
-   依赖 js/privacy-data.js（PRIVACY）
+   依赖 js/privacy-data.js（PRIVACY）与 js/main.js（getLang / langchange）
    页面通过 <body data-app="..."> 指定：overview 或某个 app id
    ============================================================ */
 (function () {
-  // 语言优先级：URL ?lang= → localStorage → 默认 zh
-  function getLang() {
+  function currentLang() {
+    if (typeof getLang === "function") return getLang();
     const fromUrl = new URLSearchParams(location.search).get("lang");
     if (fromUrl === "en" || fromUrl === "zh") return fromUrl;
     return localStorage.getItem("lang") === "en" ? "en" : "zh";
   }
-  function setLang(l) {
-    localStorage.setItem("lang", l);
-  }
-  // 给同目录页面链接附加当前语言参数
+
   function withLang(href, lang) {
     return `${href}?lang=${lang}`;
-  }
-
-  function escapeAttr(s) {
-    return String(s).replace(/"/g, "&quot;");
-  }
-
-  function renderLangSwitch(lang) {
-    const t = PRIVACY.ui.langLabel[lang];
-    const page = location.pathname.split("/").pop() || "index.html";
-    return `
-    <div class="lang-switch" role="group" aria-label="${escapeAttr(t)}">
-      <a href="${withLang(page, "zh")}" data-lang="zh" class="${lang === "zh" ? "on" : ""}">中文</a>
-      <a href="${withLang(page, "en")}" data-lang="en" class="${lang === "en" ? "on" : ""}">EN</a>
-    </div>`;
   }
 
   function renderNav(active, lang) {
@@ -119,41 +102,25 @@
     const root = document.getElementById("policy");
     if (!root || typeof PRIVACY === "undefined") return;
     const app = document.body.getAttribute("data-app") || "index";
-    const lang = getLang();
+    const lang = currentLang();
 
     document.documentElement.lang = lang === "en" ? "en" : "zh-CN";
 
-    const eyebrow = PRIVACY.ui.pageEyebrow[lang];
-    const heading =
-      app === "index" ? PRIVACY.ui.overviewHeading[lang] : PRIVACY.names[app][lang];
+    if (app === "index") {
+      document.title =
+        lang === "en" ? "Privacy · Ivor.C Studio" : "隐私政策 · Ivor.C Studio";
+    } else if (PRIVACY.names[app]) {
+      document.title = `${PRIVACY.names[app][lang]} · ${PRIVACY.ui.policyTitle[lang]} · Ivor.C Studio`;
+    }
 
-    root.innerHTML = `
-      <div class="policy-top">
-        <div>
-          <span class="eyebrow">${eyebrow}</span>
-        </div>
-        ${renderLangSwitch(lang)}
-      </div>
-      ${app === "index" ? renderOverview(lang) : renderApp(app, lang)}`;
-
-    // 语言切换：更新 URL（?lang=）但不刷新页面，支持分享/收藏/前进后退
-    root.querySelectorAll(".lang-switch a").forEach((a) => {
-      a.addEventListener("click", (e) => {
-        e.preventDefault();
-        const next = a.getAttribute("data-lang");
-        if (next === getLang()) return;
-        setLang(next);
-        const url = new URL(location.href);
-        url.searchParams.set("lang", next);
-        history.pushState({ lang: next }, "", url);
-        render();
-      });
-    });
+    root.innerHTML =
+      app === "index" ? renderOverview(lang) : renderApp(app, lang);
   }
 
   document.addEventListener("DOMContentLoaded", () => {
     render();
-    // 浏览器前进/后退时按 URL 重新渲染
+    // 与全站 header 语言切换同步
+    window.addEventListener("langchange", render);
     window.addEventListener("popstate", render);
   });
 })();

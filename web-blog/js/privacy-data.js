@@ -308,11 +308,9 @@ const PRIVACY = {
   names: {
     "today-income": { zh: "今日收入", en: "Today Income" },
     woodenfish: { zh: "电子木鱼", en: "WoodenFish" },
-    "crs-tax-calc": { zh: "境外证券收益个税计算器", en: "CRS Tax Calc" },
+    "crs-tax-calc": { zh: "境外证券收益个税计算器", en: "Overseas Securities Tax Calc" },
   },
-  badge: {
-    "crs-tax-calc": { zh: "即将上架", en: "Coming soon" },
-  },
+  badge: {},
   ui: {
     overview: { zh: "总览", en: "Overview" },
     policyTitle: { zh: "隐私政策", en: "Privacy Policy" },
